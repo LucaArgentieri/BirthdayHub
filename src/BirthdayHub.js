@@ -29,7 +29,7 @@ export default function BirthdayHub() {
 
   return (
     <>
-      {APIData.length !== 0 &&
+      {APIData.length !== 0 ? (
         APIData.map((p) => {
           if (p.birthDay + " " + p.birthMonth === currentDate) {
             return (
@@ -40,9 +40,10 @@ export default function BirthdayHub() {
               </div>
             );
           }
-        })}
-
-      {!APIData && <h1>Nessun compleanno in programma oggi</h1>}
+        })
+      ) : (
+        <h1>Nessun compleanno in programma oggi</h1>
+      )}
     </>
   );
 }
