@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import OneSignal from "react-onesignal";
 import Confetti from "react-confetti";
 import axios from "axios";
 
 export default function BirthdayHub() {
   const [APIData, setAPIData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
   const date = new Date();
   const currentDate = date.getDate() + " " + (date.getMonth() + 1);
   const { width, height } = "100%";
@@ -15,6 +18,22 @@ export default function BirthdayHub() {
         setAPIData(response.data);
       });
   }, []);
+
+  useEffect(() => {
+    APIData.forEach((p) => {
+      setFilteredData(
+        APIData.filter((p) => p.birthDay + " " + p.birthMonth === currentDate)
+      );
+
+      if (filteredData.length !== 0) {
+        filteredData.forEach((p) => {
+          OneSignal.push(() => {
+            OneSignal.sendTag(("user_type", p.name));
+          });
+        });
+      }
+    });
+  }, [APIData, currentDate]);
 
   function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -29,20 +48,18 @@ export default function BirthdayHub() {
 
   return (
     <>
-      {APIData.length !== 0 ? (
-        APIData.map((p) => {
-          if (p.birthDay + " " + p.birthMonth === currentDate) {
-            return (
-              <div key={p.id}>
-                <Confetti width={width} height={height} />
-                <h1>Oggi è il compleanno di</h1>
-                <h1 style={textStyle}>{p.name} 🎉</h1>
-              </div>
-            );
-          }
+      {filteredData.length !== 0 ? (
+        filteredData.map((p) => {
+          return (
+            <div key={p.id}>
+              <Confetti width={width} height={height} />
+              <h1>Oggi è il compleanno di</h1>
+              <h1 style={textStyle}>{p.name} 🎉</h1>
+            </div>
+          );
         })
       ) : (
-        <h1>Nessun compleanno in programma oggi</h1>
+        <h1>Non sono previsti compleanni oggi.</h1>
       )}
     </>
   );
