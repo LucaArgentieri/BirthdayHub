@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import OneSignal from "react-onesignal";
 import Confetti from "react-confetti";
 import axios from "axios";
 
@@ -24,14 +23,6 @@ export default function BirthdayHub() {
       setFilteredData(
         APIData.filter((p) => p.birthDay + " " + p.birthMonth === currentDate)
       );
-
-      if (filteredData.length !== 0) {
-        filteredData.forEach((p) => {
-          OneSignal.push(() => {
-            OneSignal.sendTag(("user_type", p.name));
-          });
-        });
-      }
     });
   }, [APIData, currentDate]);
 
